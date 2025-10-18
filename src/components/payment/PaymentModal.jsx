@@ -1,7 +1,7 @@
 import { useState, useContext } from 'react';
-import Modal from '../common/Modal';
-import Button from '../common/Button';  
-import Alert from '../common/Alert';
+import Modal from '../Common/Modal';
+import Button from '../Common/Button';  
+import Alert from '../Common/Alert';
 import { CreditCard, Building2, Smartphone, Wallet, QrCode } from 'lucide-react';
 import UPIPayment from './UPIPayment';
 import CardPayment from './CardPayment';

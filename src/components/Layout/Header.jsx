@@ -1,13 +1,14 @@
 import { useState, useContext, useEffect } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
-import { Menu, X, Home, Compass, Image, Video, Bell, User } from 'lucide-react';
-import Button from '../common/Button';
+import { Menu, X, Home, Compass, Image, Video, Bell, User, PlusCircle } from 'lucide-react';
+import Button from '../Common/Button';
 import { AuthContext } from '../../context/AuthContext';
 import { notificationService } from '../../services/index';
 
 const Header = () => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [unreadCount, setUnreadCount] = useState(0);
+  const [showCreateMenu, setShowCreateMenu] = useState(false);
   const { user, logout } = useContext(AuthContext);
   const location = useLocation();
   const navigate = useNavigate();
@@ -86,6 +87,47 @@ const Header = () => {
         <div className="hidden md:flex items-center gap-3">
           {user ? (
             <>
+              {/* Create Menu */}
+              <div className="relative">
+                <button
+                  onClick={() => setShowCreateMenu(!showCreateMenu)}
+                  className="p-2 hover:bg-dark-bg-tertiary rounded-full transition-colors"
+                >
+                  <PlusCircle size={22} className="text-text-primary" />
+                </button>
+                {showCreateMenu && (
+                  <div className="absolute right-0 mt-2 w-48 bg-dark-bg-secondary border border-dark-bg-tertiary rounded-lg shadow-lg py-2 z-50">
+                    <button
+                      onClick={() => {
+                        navigate('/create-campaign');
+                        setShowCreateMenu(false);
+                      }}
+                      className="w-full text-left px-4 py-2 text-text-primary hover:bg-dark-bg-tertiary transition-colors"
+                    >
+                      Create Campaign
+                    </button>
+                    <button
+                      onClick={() => {
+                        navigate('/create-post');
+                        setShowCreateMenu(false);
+                      }}
+                      className="w-full text-left px-4 py-2 text-text-primary hover:bg-dark-bg-tertiary transition-colors"
+                    >
+                      Create Post
+                    </button>
+                    <button
+                      onClick={() => {
+                        navigate('/create-reel');
+                        setShowCreateMenu(false);
+                      }}
+                      className="w-full text-left px-4 py-2 text-text-primary hover:bg-dark-bg-tertiary transition-colors"
+                    >
+                      Create Reel
+                    </button>
+                  </div>
+                )}
+              </div>
+
               {/* Notifications */}
               <button
                 onClick={() => navigate('/notifications')}
@@ -170,28 +212,58 @@ const Header = () => {
 
             {user && (
               <>
-                <Link
-                  to="/notifications"
-                  className="flex items-center gap-3 text-text-primary hover:text-accent-purple transition-colors"
-                  onClick={() => setMobileMenuOpen(false)}
-                >
-                  <Bell size={20} />
-                  Notifications
-                  {unreadCount > 0 && (
-                    <span className="px-2 py-0.5 bg-status-error text-white text-xs rounded-full">
-                      {unreadCount}
-                    </span>
-                  )}
-                </Link>
+                <div className="border-t border-dark-bg-tertiary pt-4 mt-4">
+                  <p className="text-text-secondary text-sm mb-2 px-2">Create</p>
+                  <Link
+                    to="/create-campaign"
+                    className="flex items-center gap-3 text-text-primary hover:text-accent-purple transition-colors mb-2"
+                    onClick={() => setMobileMenuOpen(false)}
+                  >
+                    <PlusCircle size={20} />
+                    Create Campaign
+                  </Link>
+                  <Link
+                    to="/create-post"
+                    className="flex items-center gap-3 text-text-primary hover:text-accent-purple transition-colors mb-2"
+                    onClick={() => setMobileMenuOpen(false)}
+                  >
+                    <Image size={20} />
+                    Create Post
+                  </Link>
+                  <Link
+                    to="/create-reel"
+                    className="flex items-center gap-3 text-text-primary hover:text-accent-purple transition-colors"
+                    onClick={() => setMobileMenuOpen(false)}
+                  >
+                    <Video size={20} />
+                    Create Reel
+                  </Link>
+                </div>
 
-                <Link
-                  to="/profile"
-                  className="flex items-center gap-3 text-text-primary hover:text-accent-purple transition-colors"
-                  onClick={() => setMobileMenuOpen(false)}
-                >
-                  <User size={20} />
-                  Profile
-                </Link>
+                <div className="border-t border-dark-bg-tertiary pt-4 mt-4">
+                  <Link
+                    to="/notifications"
+                    className="flex items-center gap-3 text-text-primary hover:text-accent-purple transition-colors"
+                    onClick={() => setMobileMenuOpen(false)}
+                  >
+                    <Bell size={20} />
+                    Notifications
+                    {unreadCount > 0 && (
+                      <span className="px-2 py-0.5 bg-status-error text-white text-xs rounded-full">
+                        {unreadCount}
+                      </span>
+                    )}
+                  </Link>
+
+                  <Link
+                    to="/profile"
+                    className="flex items-center gap-3 text-text-primary hover:text-accent-purple transition-colors mt-2"
+                    onClick={() => setMobileMenuOpen(false)}
+                  >
+                    <User size={20} />
+                    Profile
+                  </Link>
+                </div>
               </>
             )}
 

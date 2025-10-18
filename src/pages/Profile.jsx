@@ -1,11 +1,11 @@
 import { useState, useEffect, useContext } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { Settings, Calendar, Edit } from 'lucide-react';
-import Button from '../components/common/Button';
-import Card from '../components/common/Card';
-import LoadingSpinner from '../components/common/LoadingSpinner';
-import Modal from '../components/common/Modal';
-import Input from '../components/common/Input';
+import Button from '../components/Common/Button';
+import Card from '../components/Common/Card';
+import LoadingSpinner from '../components/Common/LoadingSpinner';
+import Modal from '../components/Common/Modal';
+import Input from '../components/Common/Input';
 import { AuthContext } from '../context/AuthContext';
 import { getProfile, updateProfile } from '../services/profileService';
 import * as campaignService from '../services/campaignService';

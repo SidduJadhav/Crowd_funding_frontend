@@ -1,6 +1,6 @@
-import HeroSection from '../components/sections/HeroSection';
-import FeaturedCampaigns from '../components/sections/FeaturedCampaigns';
-import HowItWorks from '../components/sections/HowItWorks';
+import HeroSection from '../components/Sections/HeroSection';
+import FeaturedCampaigns from '../components/Sections/FeaturedCampaigns';
+import HowItWorks from '../components/Sections/HowItWorks';
 
 const Landing = () => {
   return (

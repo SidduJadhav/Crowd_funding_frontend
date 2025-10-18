@@ -1,7 +1,7 @@
 import { useState, useEffect, useContext } from 'react';
 import { Heart, MessageCircle, Share2, Bookmark } from 'lucide-react';
-import LoadingSpinner from '../components/common/LoadingSpinner';
-import EmptyState from '../components/common/EmptyState';
+import LoadingSpinner from '../components/Common/LoadingSpinner';
+import EmptyState from '../components/Common/EmptyState';
 import { AuthContext } from '../context/AuthContext';
 import { postService, followService } from '../services/index';
 import { formatNumber } from '../utils/formatters';
@@ -70,11 +70,29 @@ const Posts = () => {
   ];
 
   const handleLike = async (postId) => {
+    const post = posts.find(p => p.id === postId);
+    const wasLiked = post.isLiked;
+
     setPosts(posts.map(p =>
       p.id === postId
         ? { ...p, isLiked: !p.isLiked, likesCount: p.isLiked ? p.likesCount - 1 : p.likesCount + 1 }
         : p
     ));
+
+    try {
+      if (wasLiked) {
+        await postService.unlikePost(postId, user.id);
+      } else {
+        await postService.likePost(postId, user.id);
+      }
+    } catch (error) {
+      console.error('Failed to like/unlike post:', error);
+      setPosts(posts.map(p =>
+        p.id === postId
+          ? { ...p, isLiked: wasLiked, likesCount: wasLiked ? p.likesCount + 1 : p.likesCount - 1 }
+          : p
+      ));
+    }
   };
 
   const getTimeAgo = (date) => {

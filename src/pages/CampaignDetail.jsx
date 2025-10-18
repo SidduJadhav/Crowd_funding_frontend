@@ -1,9 +1,9 @@
 import { useState, useEffect, useContext } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { Heart, Share2, Users, Calendar } from 'lucide-react';
-import Button from '../components/common/Button';
-import Badge from '../components/common/Badge';
-import ProgressBar from '../components/common/ProgressBar';
+import Button from '../components/Common/Button';
+import Badge from '../components/Common/Badge';
+import ProgressBar from '../components/Common/ProgressBar';
 import PaymentModal from '../components/payment/PaymentModal';
 import apiClient from '../services/api';
 import { formatCurrency, formatNumber, getDaysLeft, getFundingPercentage, formatDate } from '../utils/formatters';

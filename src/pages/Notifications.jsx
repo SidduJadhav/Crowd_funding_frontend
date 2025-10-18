@@ -1,9 +1,9 @@
 import { useState, useEffect, useContext } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Heart, MessageCircle, UserPlus, TrendingUp, DollarSign, Bell, Check } from 'lucide-react';
-import Button from '../components/common/Button';
-import LoadingSpinner from '../components/common/LoadingSpinner';
-import EmptyState from '../components/common/EmptyState';
+import Button from '../components/Common/Button';
+import LoadingSpinner from '../components/Common/LoadingSpinner';
+import EmptyState from '../components/Common/EmptyState';
 import { AuthContext } from '../context/AuthContext';
 import { notificationService } from '../services/index';
 import { formatDate } from '../utils/formatters';

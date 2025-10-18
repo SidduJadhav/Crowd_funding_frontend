@@ -1,8 +1,8 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Search, Filter } from 'lucide-react';
-import Card from '../components/common/Card';
-import Button from '../components/common/Button';
+import Card from '../components/Common/Card';
+import Button from '../components/Common/Button';
 import apiClient from '../services/api';
 import { CATEGORIES, SORT_OPTIONS } from '../utils/constants';
 

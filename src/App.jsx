@@ -1,7 +1,7 @@
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import { AuthProvider } from './context/AuthContext';
-import Footer from './components/layout/Footer';
-import Header from './components/layout/Header';
+import Footer from './components/Layout/Footer';
+import Header from './components/Layout/Header';
 
 
 // Pages
@@ -15,6 +15,9 @@ import Reels from './pages/Reels';
 import Notifications from './pages/Notifications';
 import Login from './pages/Login';
 import Signup from './pages/Signup';
+import CreateCampaign from './pages/CreateCampaign';
+import CreatePost from './pages/CreatePost';
+import CreateReel from './pages/CreateReel';
 
 function App() {
   return (
@@ -35,6 +38,9 @@ function App() {
               <Route path="/notifications" element={<Notifications />} />
               <Route path="/login" element={<Login />} />
               <Route path="/signup" element={<Signup />} />
+              <Route path="/create-campaign" element={<CreateCampaign />} />
+              <Route path="/create-post" element={<CreatePost />} />
+              <Route path="/create-reel" element={<CreateReel />} />
               <Route path="*" element={<Navigate to="/" />} />
             </Routes>
           </main>

@@ -223,6 +223,19 @@ export const postService = {
     const response = await apiClient.get(`/posts/feed?${queryParams}`);
     return response.data;
   },
+  likePost: async (postId, userId) => {
+    const response = await apiClient.post('/likes', {
+      userId,
+      postId,
+    });
+    return response.data;
+  },
+  unlikePost: async (postId, userId) => {
+    const response = await apiClient.delete('/likes', {
+      data: { userId, postId },
+    });
+    return response.data;
+  },
 };
 
 // ==================== REEL SERVICE ====================
@@ -248,6 +261,19 @@ export const reelService = {
     const queryParams = new URLSearchParams({ page, size });
     if (currentUserId) queryParams.append('currentUserId', currentUserId);
     const response = await apiClient.get(`/reels/user/${userId}?${queryParams}`);
+    return response.data;
+  },
+  likeReel: async (reelId, userId) => {
+    const response = await apiClient.post('/likes', {
+      userId,
+      reelId,
+    });
+    return response.data;
+  },
+  unlikeReel: async (reelId, userId) => {
+    const response = await apiClient.delete('/likes', {
+      data: { userId, reelId },
+    });
     return response.data;
   },
 };

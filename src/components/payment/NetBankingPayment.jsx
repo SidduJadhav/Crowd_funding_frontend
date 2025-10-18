@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
-import Button from '../common/Button';
-import Alert from '../common/Alert';
-import LoadingSpinner from '../common/LoadingSpinner';
+import Button from '../Common/Button';
+import Alert from '../Common/Alert';
+import LoadingSpinner from '../Common/LoadingSpinner';
 import { Building2, Search } from 'lucide-react';
 import { getSupportedBanks, initiateNetBanking } from '../../services/paymentService';
 

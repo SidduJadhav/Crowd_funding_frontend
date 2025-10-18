@@ -1,8 +1,8 @@
 import { useState } from 'react';
-import Modal from '../common/Modal';
-import Button from '../common/Button';
-import Input from '../common/Input';
-import Alert from '../common/Alert';
+import Modal from '../Common/Modal';
+import Button from '../Common/Button';
+import Input from '../Common/Input';
+import Alert from '../Common/Alert';
 import { Heart } from 'lucide-react';
 
 const DonationModal = ({ isOpen, onClose, campaign }) => {

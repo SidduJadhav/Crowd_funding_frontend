@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
-import Button from '../common/Button';
-import Alert from '../common/Alert';
+import Button from '../Common/Button';
+import Alert from '../Common/Alert';
 import { QrCode, Smartphone, Copy, Check } from 'lucide-react';
 import { generateUPIQRCode, verifyUPIPayment, validateUPIId } from '../../services/paymentService';
 

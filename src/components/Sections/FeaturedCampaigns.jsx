@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import Card from '../common/Card';
-import Button from '../common/Button';
+import Card from '../Common/Card';
+import Button from '../Common/Button';
 import apiClient from '../../services/api';
 
 const FeaturedCampaigns = () => {

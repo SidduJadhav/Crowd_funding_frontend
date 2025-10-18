@@ -1,9 +1,9 @@
 import { useState, useEffect, useContext } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Sparkles, TrendingUp, Users, Heart } from 'lucide-react';
-import Card from '../components/common/Card';
-import LoadingSpinner from '../components/common/LoadingSpinner';
-import EmptyState from '../components/common/EmptyState';
+import Card from '../components/Common/Card';
+import LoadingSpinner from '../components/Common/LoadingSpinner';
+import EmptyState from '../components/Common/EmptyState';
 import { AuthContext } from '../context/AuthContext';
 import * as campaignService from '../services/campaignService';
 import { followService, postService } from '../services/index';

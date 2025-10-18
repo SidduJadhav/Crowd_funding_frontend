@@ -1,7 +1,7 @@
 import { useState } from 'react';
-import Button from '../common/Button';
-import Alert from '../common/Alert';
-import Input from '../common/Input';
+import Button from '../Common/Button';
+import Alert from '../Common/Alert';
+import Input from '../Common/Input';
 import { CreditCard, Lock } from 'lucide-react';
 import { processCardPayment, validateCardNumber, getCardType, formatCardNumber } from '../../services/paymentService';
 

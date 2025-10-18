@@ -1,10 +1,12 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, useContext } from 'react';
 import { Heart, MessageCircle, Share2, Play, Pause, Volume2, VolumeX } from 'lucide-react';
-import LoadingSpinner from '../components/common/LoadingSpinner';
+import LoadingSpinner from '../components/Common/LoadingSpinner';
+import { AuthContext } from '../context/AuthContext';
 import { reelService } from '../services/index';
 import { formatNumber } from '../utils/formatters';
 
 const Reels = () => {
+  const { user } = useContext(AuthContext);
   const [reels, setReels] = useState([]);
   const [currentIndex, setCurrentIndex] = useState(0);
   const [loading, setLoading] = useState(true);
@@ -76,12 +78,31 @@ const Reels = () => {
   };
 
   const handleLike = async (reelId) => {
-    // Handle like
-    setReels(reels.map(r => 
-      r.id === reelId 
-        ? { ...r, likesCount: r.likesCount + 1, isLiked: !r.isLiked }
+    if (!user) return;
+
+    const reel = reels.find(r => r.id === reelId);
+    const wasLiked = reel.isLiked;
+
+    setReels(reels.map(r =>
+      r.id === reelId
+        ? { ...r, likesCount: r.isLiked ? r.likesCount - 1 : r.likesCount + 1, isLiked: !r.isLiked }
         : r
     ));
+
+    try {
+      if (wasLiked) {
+        await reelService.unlikeReel(reelId, user.id);
+      } else {
+        await reelService.likeReel(reelId, user.id);
+      }
+    } catch (error) {
+      console.error('Failed to like/unlike reel:', error);
+      setReels(reels.map(r =>
+        r.id === reelId
+          ? { ...r, isLiked: wasLiked, likesCount: wasLiked ? r.likesCount + 1 : r.likesCount - 1 }
+          : r
+      ));
+    }
   };
 
   const handlePlayPause = () => {
