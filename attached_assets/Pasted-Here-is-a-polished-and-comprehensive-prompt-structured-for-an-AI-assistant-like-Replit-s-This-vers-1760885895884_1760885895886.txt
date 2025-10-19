@@ -1,0 +1,64 @@
+Here is a polished and comprehensive prompt, structured for an AI assistant like Replit's. This version is clear, actionable, and provides all the necessary context.
+
+---
+
+### **Project Title: Frontend MVP for "Catalyster" Crowdfunding Platform**
+
+**Project Goal:**
+To build a functional Minimum Viable Product (MVP) frontend for "Catalyster," an existing Instagram-style crowdfunding platform. The backend API is already developed, deployed, and documented. Your primary task is to review the existing (but broken) frontend code, identify non-functional endpoints, and implement the critical user flows, with the highest priority on creating content (posts, campaigns) and processing payments.
+
+**Backend Information:**
+* **Live API Base URL:** `https://catalyster.onrender.com/api/v1`
+* **Backend Technology:** Spring Boot (Java), PostgreSQL, MongoDB
+* **Payment Gateway:** Stripe (configured for INR currency)
+
+**Technology Stack (Frontend):**
+* **Framework:** React (using Hooks, Context API)
+* **Routing:** `react-router-dom`
+* **API Calls:** `axios` or `fetch`
+* **Styling:** (Specify your styling library, e.g., Tailwind CSS, Material-UI, or plain CSS)
+* **Payment:** `@stripe/react-stripe-js` and `@stripe/stripe-js`
+
+---
+
+### **Key Responsibilities & Action Items:**
+
+Your job is to act as the lead frontend developer. The current frontend is incomplete, and most "create" operations are not working.
+
+**1. Review and Understand (Highest Priority):**
+* **Review API Documentation:** I have attached the backend API documentation (e.g., Swagger/OpenAPI spec or Postman collection). You *must* study this first to understand all available endpoints, required request bodies (JSON payloads), and authentication (JWT token) requirements.
+* **Review Existing Code:** Analyze the current React project structure. Identify the components and services that are intended to handle user authentication, content creation, and payments.
+
+**2. Implement Core "Create" Features (Critical):**
+The current app fails when a user tries to create new content. You need to fix or implement these features:
+
+* **Create Campaign (`/create-campaign`):**
+    * Connect the "Create Campaign" form to the correct backend endpoint (e.g., `POST /api/v1/campaigns`).
+    * Ensure the form data (title, description, goal amount, images, etc.) is correctly formatted into the JSON payload required by the API.
+    * Handle the API response and redirect to the new campaign's page on success.
+
+* **Create Post (`/create-post`):**
+    * Connect the "Create Post" form/modal to `POST /api/v1/posts`.
+    * Ensure image/video uploads are handled correctly and the API request is successful.
+
+* **Create Reel (`/create-reel`):**
+    * Connect the "Create Reel" form/modal to `POST /api/v1/reels`.
+    * Ensure video upload and data submission match the API documentation.
+
+**3. Implement Stripe Payment Flow (Critical):**
+This is the most important feature for a crowdfunding platform.
+
+* **Create a Payment Service:** Modify the existing `paymentService` (or create a new one).
+* **Initiate Payment:** On the "Fund Project" button click, your frontend must:
+    1.  Make an authenticated API call to the backend to create a payment session (e.g., `POST /api/v1/payments/create-checkout`).
+    2.  The request body must send the `campaignId` and `amount` (in INR).
+* **Handle Redirect:**
+    1.  The backend will respond with a Stripe Checkout session ID or URL.
+    2.  Use the Stripe.js library (`@stripe/stripe-js`) to redirect the user to the secure Stripe Checkout page.
+* **Handle Success/Cancel:** Create the success (`/payment-success`) and cancel (`/payment-cancel`) pages that Stripe will redirect to.
+
+**4. Fix Authentication and Authorization:**
+* Ensure that the JWT token received after login is correctly stored (in `localStorage` or `AuthContext`).
+* Ensure that this token is automatically attached to the "Authorization" header (e.g., `Bearer <token>`) for all protected API requests (like creating posts or payments). This is likely the reason many endpoints are failing.
+
+Please start by confirming your understanding of the API documentation and then outline your plan, beginning with the **Stripe Payment Flow** and the **Create Campaign** feature.

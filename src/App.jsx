@@ -18,6 +18,8 @@ import Signup from './pages/Signup';
 import CreateCampaign from './pages/CreateCampaign';
 import CreatePost from './pages/CreatePost';
 import CreateReel from './pages/CreateReel';
+import PaymentSuccess from './pages/PaymentSuccess';
+import PaymentCancel from './pages/PaymentCancel';
 
 function App() {
   return (
@@ -41,6 +43,8 @@ function App() {
               <Route path="/create-campaign" element={<CreateCampaign />} />
               <Route path="/create-post" element={<CreatePost />} />
               <Route path="/create-reel" element={<CreateReel />} />
+              <Route path="/payment-success" element={<PaymentSuccess />} />
+              <Route path="/payment-cancel" element={<PaymentCancel />} />
               <Route path="*" element={<Navigate to="/" />} />
             </Routes>
           </main>

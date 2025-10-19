@@ -1,13 +1,14 @@
-import { useState, useContext } from 'react';
+import { useState, useContext, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Tag } from 'lucide-react';
 import Button from '../components/Common/Button';
 import Input from '../components/Common/Input';
+import LoadingSpinner from '../components/Common/LoadingSpinner';
 import { AuthContext } from '../context/AuthContext';
 import { reelService } from '../services/index';
 
 const CreateReel = () => {
-  const { user } = useContext(AuthContext);
+  const { user, loading: authLoading } = useContext(AuthContext);
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
@@ -97,9 +98,29 @@ const CreateReel = () => {
     }
   };
 
+  useEffect(() => {
+    if (!user && !authLoading) {
+      navigate('/login');
+    }
+  }, [user, authLoading, navigate]);
+
+  if (authLoading) {
+    return (
+      <div className="min-h-screen bg-dark-bg flex items-center justify-center">
+        <LoadingSpinner size="large" />
+      </div>
+    );
+  }
+
   if (!user) {
-    navigate('/login');
-    return null;
+    return (
+      <div className="min-h-screen bg-dark-bg flex items-center justify-center">
+        <div className="text-center">
+          <h2 className="text-2xl font-bold text-text-primary mb-2">Authentication Required</h2>
+          <p className="text-text-secondary">Redirecting to login...</p>
+        </div>
+      </div>
+    );
   }
 
   return (

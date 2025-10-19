@@ -10,6 +10,8 @@
     "lint": "eslint src"
   },
   "dependencies": {
+    "@stripe/react-stripe-js": "^5.2.0",
+    "@stripe/stripe-js": "^8.1.0",
     "axios": "^1.7.7",
     "lucide-react": "^0.546.0",
     "react": "^19.1.1",

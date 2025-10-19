@@ -32,9 +32,14 @@ src/
 ```
 
 ### Key Features
-- User authentication and authorization
+- User authentication and authorization with JWT tokens
 - Campaign creation and discovery
-- Donation processing with multiple payment methods (UPI, Card, Net Banking, Wallet)
+- **Donation processing with Stripe Checkout (recommended) and other payment methods:**
+  - Stripe Checkout (Card payments) - Recommended, PCI compliant
+  - UPI (Google Pay, PhonePe, Paytm)
+  - Card (Direct integration)
+  - Net Banking (All major banks)
+  - Wallet (Paytm, PhonePe, etc.)
 - Social features (Posts, Reels, Comments)
 - User profiles and notifications
 - Campaign filtering and sorting
@@ -59,7 +64,7 @@ src/
 - `npm run lint` - Lint code
 
 ## Recent Changes
-- **2025-10-19**: Initial Replit setup
+- **2025-10-19**: Initial Replit setup and MVP implementation
   - Configured Vite to use port 5000 with 0.0.0.0 host
   - Enabled allowedHosts for Replit proxy compatibility
   - Configured HMR for Replit environment with WSS protocol
@@ -67,6 +72,18 @@ src/
   - Set up Frontend workflow on port 5000
   - Configured deployment for autoscale with Vite preview
   - Installed all npm dependencies
+  - **Stripe Payment Integration:**
+    - Installed @stripe/stripe-js and @stripe/react-stripe-js packages
+    - Created stripeService.js for Stripe Checkout integration
+    - Implemented StripePayment component for secure card payments
+    - Updated PaymentModal to include Stripe as recommended payment method (marked with badge)
+    - Created PaymentSuccess and PaymentCancel pages for redirect handling
+    - Added routes for /payment-success and /payment-cancel in App.jsx
+  - **Create Features Verified:**
+    - CreateCampaign: Fully functional with validation and API integration
+    - CreatePost: Fully functional with media URLs and tags support
+    - CreateReel: Fully functional with video upload support
+    - All create features properly use authenticated API calls with JWT tokens from AuthContext
 
 ## User Preferences
 None documented yet.

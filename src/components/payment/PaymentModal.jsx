@@ -7,6 +7,7 @@ import UPIPayment from './UPIPayment';
 import CardPayment from './CardPayment';
 import NetBankingPayment from './NetBankingPayment';
 import WalletPayment from './WalletPayment';
+import StripePayment from './StripePayment';
 import { AuthContext } from '../../context/AuthContext';
 
 const PaymentModal = ({ isOpen, onClose, campaign, amount: initialAmount }) => {
@@ -18,6 +19,7 @@ const PaymentModal = ({ isOpen, onClose, campaign, amount: initialAmount }) => {
   const [error, setError] = useState('');
 
   const paymentMethods = [
+    { id: 'stripe', name: 'Card (Stripe)', icon: CreditCard, desc: 'Secure card payment via Stripe', recommended: true },
     { id: 'upi', name: 'UPI', icon: QrCode, desc: 'Pay via Google Pay, PhonePe, Paytm' },
     { id: 'card', name: 'Card', icon: CreditCard, desc: 'Debit/Credit Card' },
     { id: 'netbanking', name: 'Net Banking', icon: Building2, desc: 'All major banks' },
@@ -47,6 +49,8 @@ const PaymentModal = ({ isOpen, onClose, campaign, amount: initialAmount }) => {
     };
 
     switch (paymentMethod) {
+      case 'stripe':
+        return <StripePayment {...commonProps} />;
       case 'upi':
         return <UPIPayment {...commonProps} />;
       case 'card':
@@ -158,8 +162,15 @@ const PaymentModal = ({ isOpen, onClose, campaign, amount: initialAmount }) => {
                       key={method.id}
                       onClick={() => setPaymentMethod(method.id)}
                       disabled={!amount || parseFloat(amount) <= 0}
-                      className="p-4 border border-dark-bg-tertiary rounded-lg hover:border-accent-purple transition-colors disabled:opacity-50 disabled:cursor-not-allowed text-left"
+                      className={`p-4 border rounded-lg hover:border-accent-purple transition-colors disabled:opacity-50 disabled:cursor-not-allowed text-left relative ${
+                        method.recommended ? 'border-accent-purple bg-accent-purple bg-opacity-5' : 'border-dark-bg-tertiary'
+                      }`}
                     >
+                      {method.recommended && (
+                        <span className="absolute top-2 right-2 text-xs bg-accent-purple text-white px-2 py-1 rounded">
+                          Recommended
+                        </span>
+                      )}
                       <Icon className="text-accent-purple mb-2" size={24} />
                       <h4 className="text-text-primary font-semibold">{method.name}</h4>
                       <p className="text-text-tertiary text-sm">{method.desc}</p>
