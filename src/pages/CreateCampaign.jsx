@@ -17,7 +17,7 @@ const CreateCampaign = () => {
     description: '',
     goalAmount: '',
     currency: 'INR',
-    category: 'EDUCATION',
+    category: 'Education',
     startDate: '',
     endDate: '',
     imageUrl: '',
@@ -25,17 +25,16 @@ const CreateCampaign = () => {
     beneficiaryName: '',
   });
 
+  // FIXED: Categories now match API documentation
   const categories = [
-    'EDUCATION',
-    'MEDICAL',
-    'DISASTER_RELIEF',
-    'ANIMAL_WELFARE',
-    'ENVIRONMENT',
-    'COMMUNITY',
-    'ARTS',
-    'SPORTS',
-    'TECHNOLOGY',
-    'OTHER',
+    'Technology',
+    'Art',
+    'Design',
+    'Health',
+    'Education',
+    'Social',
+    'Environment',
+    'Entertainment',
   ];
 
   const handleChange = (e) => {
@@ -46,42 +45,111 @@ const CreateCampaign = () => {
     }));
   };
 
+  // FIXED: Enhanced validation
+  const validateForm = () => {
+    if (!formData.title || formData.title.length < 5 || formData.title.length > 200) {
+      setError('Campaign title must be between 5 and 200 characters');
+      return false;
+    }
+
+    if (!formData.description || formData.description.length < 50 || formData.description.length > 5000) {
+      setError('Description must be between 50 and 5000 characters');
+      return false;
+    }
+
+    if (!formData.goalAmount || parseFloat(formData.goalAmount) < 100) {
+      setError('Goal amount must be at least 100');
+      return false;
+    }
+
+    if (!formData.beneficiaryName || formData.beneficiaryName.length < 2 || formData.beneficiaryName.length > 100) {
+      setError('Beneficiary name must be between 2 and 100 characters');
+      return false;
+    }
+
+    // FIXED: Date validation
+    if (formData.startDate && formData.endDate) {
+      const start = new Date(formData.startDate);
+      const end = new Date(formData.endDate);
+      
+      if (end <= start) {
+        setError('End date must be after start date');
+        return false;
+      }
+
+      if (start < new Date()) {
+        setError('Start date cannot be in the past');
+        return false;
+      }
+    }
+
+    return true;
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError(null);
 
-    if (!formData.title || !formData.description || !formData.goalAmount || !formData.beneficiaryName) {
-      setError('Please fill in all required fields');
+    if (!validateForm()) {
       return;
     }
 
-    if (parseFloat(formData.goalAmount) < 100) {
-      setError('Goal amount must be at least 100');
+    // FIXED: Verify user object structure
+    if (!user || !user.id) {
+      setError('User authentication error. Please login again.');
+      navigate('/login');
       return;
     }
 
     try {
       setLoading(true);
 
+      const now = new Date();
+      const defaultEndDate = new Date(now.getTime() + 90 * 24 * 60 * 60 * 1000);
+
       const campaignData = {
-        creatorId: user.id,
-        title: formData.title,
-        description: formData.description,
+        creatorId: user.id, // Ensure this matches your AuthContext user structure
+        title: formData.title.trim(),
+        description: formData.description.trim(),
         goalAmount: parseFloat(formData.goalAmount),
         currency: formData.currency,
         category: formData.category,
-        startDate: formData.startDate ? new Date(formData.startDate).toISOString() : new Date().toISOString(),
-        endDate: formData.endDate ? new Date(formData.endDate).toISOString() : new Date(Date.now() + 90 * 24 * 60 * 60 * 1000).toISOString(),
-        imageUrl: formData.imageUrl || `https://images.unsplash.com/photo-1532629345422-7515f3d16bb6?w=800&h=600&fit=crop`,
-        videoUrl: formData.videoUrl || '',
-        beneficiaryName: formData.beneficiaryName,
+        startDate: formData.startDate 
+          ? new Date(formData.startDate).toISOString() 
+          : now.toISOString(),
+        endDate: formData.endDate 
+          ? new Date(formData.endDate).toISOString() 
+          : defaultEndDate.toISOString(),
+        // FIXED: Remove default image, let backend handle it or make it required
+        imageUrl: formData.imageUrl.trim() || null,
+        videoUrl: formData.videoUrl.trim() || null,
+        beneficiaryName: formData.beneficiaryName.trim(),
       };
 
       const response = await createCampaign(campaignData);
+      
+      // Success - redirect to campaign page
       navigate(`/campaign/${response.id}`);
     } catch (err) {
       console.error('Failed to create campaign:', err);
-      setError(err.response?.data?.message || 'Failed to create campaign. Please try again.');
+      
+      // FIXED: Better error handling
+      if (err.response?.status === 401) {
+        setError('Session expired. Please login again.');
+        navigate('/login');
+      } else if (err.response?.status === 400) {
+        // Validation error from backend
+        const validationErrors = err.response?.data?.errors;
+        if (validationErrors && Array.isArray(validationErrors)) {
+          setError(validationErrors.map(e => e.message).join(', '));
+        } else {
+          setError(err.response?.data?.message || 'Invalid campaign data. Please check your inputs.');
+        }
+      } else if (err.response?.status === 403) {
+        setError('You do not have permission to create campaigns.');
+      } else {
+        setError(err.response?.data?.message || 'Failed to create campaign. Please try again.');
+      }
     } finally {
       setLoading(false);
     }
@@ -132,25 +200,29 @@ const CreateCampaign = () => {
             name="title"
             value={formData.title}
             onChange={handleChange}
-            placeholder="Enter a compelling title"
+            placeholder="Enter a compelling title (5-200 characters)"
             required
             maxLength={200}
           />
 
           <div>
-            <label className="block text-text-primary font-medium mb-2">Description</label>
+            <label className="block text-text-primary font-medium mb-2">
+              Description <span className="text-status-error">*</span>
+            </label>
             <textarea
               name="description"
               value={formData.description}
               onChange={handleChange}
-              placeholder="Describe your campaign in detail"
+              placeholder="Describe your campaign in detail (minimum 50 characters)"
               rows={6}
               required
               minLength={50}
               maxLength={5000}
               className="w-full px-4 py-3 bg-dark-bg border border-dark-bg-tertiary rounded-lg text-text-primary placeholder-text-tertiary focus:outline-none focus:border-accent-purple resize-none"
             />
-            <p className="text-text-tertiary text-sm mt-1">{formData.description.length}/5000</p>
+            <p className={`text-sm mt-1 ${formData.description.length < 50 ? 'text-status-error' : 'text-text-tertiary'}`}>
+              {formData.description.length}/5000 {formData.description.length < 50 && `(minimum 50 characters)`}
+            </p>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -160,15 +232,17 @@ const CreateCampaign = () => {
               name="goalAmount"
               value={formData.goalAmount}
               onChange={handleChange}
-              placeholder="Enter goal amount"
+              placeholder="Minimum 100"
               required
               min="100"
               step="0.01"
-              icon={<DollarSign size={18} />}
+              icon={DollarSign}
             />
 
             <div>
-              <label className="block text-text-primary font-medium mb-2">Currency</label>
+              <label className="block text-text-primary font-medium mb-2">
+                Currency <span className="text-status-error">*</span>
+              </label>
               <select
                 name="currency"
                 value={formData.currency}
@@ -184,7 +258,9 @@ const CreateCampaign = () => {
           </div>
 
           <div>
-            <label className="block text-text-primary font-medium mb-2">Category</label>
+            <label className="block text-text-primary font-medium mb-2">
+              Category <span className="text-status-error">*</span>
+            </label>
             <select
               name="category"
               value={formData.category}
@@ -193,7 +269,7 @@ const CreateCampaign = () => {
             >
               {categories.map(cat => (
                 <option key={cat} value={cat}>
-                  {cat.replace(/_/g, ' ')}
+                  {cat}
                 </option>
               ))}
             </select>
@@ -204,7 +280,7 @@ const CreateCampaign = () => {
             name="beneficiaryName"
             value={formData.beneficiaryName}
             onChange={handleChange}
-            placeholder="Who will benefit from this campaign?"
+            placeholder="Who will benefit from this campaign? (2-100 characters)"
             required
             maxLength={100}
           />
@@ -216,7 +292,7 @@ const CreateCampaign = () => {
               name="startDate"
               value={formData.startDate}
               onChange={handleChange}
-              icon={<Calendar size={18} />}
+              icon={Calendar}
             />
 
             <Input
@@ -225,7 +301,7 @@ const CreateCampaign = () => {
               name="endDate"
               value={formData.endDate}
               onChange={handleChange}
-              icon={<Calendar size={18} />}
+              icon={Calendar}
             />
           </div>
 

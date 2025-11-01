@@ -15,9 +15,7 @@ export const getProfile = async (userId) => {
   }
 };
 
-/**
- * Create a new profile (automatic default profile after signup)
- */
+
 export const createProfile = async (profileData) => {
   try {
     console.log('[profileService.createProfile] Creating profile with data:', profileData);

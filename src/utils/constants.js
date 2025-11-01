@@ -1,5 +1,16 @@
 // API Configuration
-export const API_BASE_URL = import.meta.env.VITE_API_URL || 'https://catalyster.onrender.com/api/v1';
+let API_BASE_URL;
+
+if (window.location.hostname === 'localhost') {
+  // Frontend is running locally
+  API_BASE_URL = 'http://localhost:8080/api/v1';
+} else {
+  // Frontend is hosted (e.g. Render, Vercel, etc.)
+  API_BASE_URL = 'https://catalyster.onrender.com/api/v1';
+}
+
+export { API_BASE_URL };
+
 
 // Categories for filtering
 export const CATEGORIES = [

@@ -4,7 +4,7 @@ import { Heart, Share2, Users, Calendar } from 'lucide-react';
 import Button from '../components/Common/Button';
 import Badge from '../components/Common/Badge';
 import ProgressBar from '../components/Common/ProgressBar';
-import PaymentModal from '../components/payment/PaymentModal';
+import DonationForm from '../components/Payment/DonationForm';
 import apiClient from '../services/api';
 import { formatCurrency, formatNumber, getDaysLeft, getFundingPercentage, formatDate } from '../utils/formatters';
 import { AuthContext } from '../context/AuthContext';
@@ -17,7 +17,7 @@ const CampaignDetail = () => {
   const [loading, setLoading] = useState(true);
   const [liked, setLiked] = useState(false);
   const [activeTab, setActiveTab] = useState('about');
-  const [showPaymentModal, setShowPaymentModal] = useState(false);
+  const [showDonationForm, setShowDonationForm] = useState(false);
 
   useEffect(() => {
     fetchCampaignDetail();
@@ -74,30 +74,13 @@ Our mission is to make smart home technology accessible to everyone, not just te
         isMilestone: true,
       },
     ],
-    rewards: [
+    updates: [
       {
         id: 1,
-        title: 'Early Bird Special',
-        amount: 49,
-        description: 'Get the platform for 50% off the retail price',
-        backers: 100,
-        limited: true,
-      },
-      {
-        id: 2,
-        title: 'Standard Package',
-        amount: 99,
-        description: 'Full platform access plus lifetime updates',
-        backers: 150,
-        limited: false,
-      },
-      {
-        id: 3,
-        title: 'Premium Package',
-        amount: 299,
-        description: 'Premium support, custom integrations, and priority updates',
-        backers: 50,
-        limited: false,
+        title: 'Beta Release Announcement',
+        content: 'We are excited to announce our beta release! The platform is now available for early testing.',
+        date: new Date(Date.now() - 5 * 24 * 60 * 60 * 1000),
+        isMilestone: true,
       },
     ],
   });
@@ -175,7 +158,7 @@ Our mission is to make smart home technology accessible to everyone, not just te
             {/* Tabs */}
             <div className="mb-8">
               <div className="flex gap-8 border-b border-dark-bg-tertiary mb-8">
-                {['about', 'rewards', 'updates'].map((tab) => (
+                {['about', 'updates'].map((tab) => (
                   <button
                     key={tab}
                     onClick={() => setActiveTab(tab)}
@@ -199,60 +182,33 @@ Our mission is to make smart home technology accessible to everyone, not just te
                 </div>
               )}
 
-              {activeTab === 'rewards' && (
-                <div className="space-y-4">
-                  {campaign.rewards.map((reward) => (
-                    <div
-                      key={reward.id}
-                      className="border border-dark-bg-tertiary rounded-lg p-6 hover:border-accent-purple transition-colors"
-                    >
-                      <div className="flex justify-between items-start mb-3">
-                        <div>
-                          <h3 className="text-text-primary font-semibold text-lg">
-                            {reward.title}
-                          </h3>
-                          <p className="text-accent-purple font-bold text-2xl mt-2">
-                            ${reward.amount}
-                          </p>
-                        </div>
-                        {reward.limited && (
-                          <Badge text="Limited" variant="warning" />
-                        )}
-                      </div>
-                      <p className="text-text-secondary mb-3">
-                        {reward.description}
-                      </p>
-                      <p className="text-text-tertiary text-sm">
-                        {reward.backers} backers
-                      </p>
-                    </div>
-                  ))}
-                </div>
-              )}
-
               {activeTab === 'updates' && (
                 <div className="space-y-6">
-                  {campaign.updates.map((update) => (
-                    <div
-                      key={update.id}
-                      className="border-l-2 border-accent-purple pl-6"
-                    >
-                      <div className="flex items-center gap-3 mb-2">
-                        <h3 className="text-text-primary font-semibold text-lg">
-                          {update.title}
-                        </h3>
-                        {update.isMilestone && (
-                          <Badge text="Milestone" variant="success" />
-                        )}
+                  {campaign.updates && campaign.updates.length > 0 ? (
+                    campaign.updates.map((update) => (
+                      <div
+                        key={update.id}
+                        className="border-l-2 border-accent-purple pl-6"
+                      >
+                        <div className="flex items-center gap-3 mb-2">
+                          <h3 className="text-text-primary font-semibold text-lg">
+                            {update.title}
+                          </h3>
+                          {update.isMilestone && (
+                            <Badge text="Milestone" variant="success" />
+                          )}
+                        </div>
+                        <p className="text-text-tertiary text-sm mb-3">
+                          {formatDate(update.date)}
+                        </p>
+                        <p className="text-text-secondary">
+                          {update.content}
+                        </p>
                       </div>
-                      <p className="text-text-tertiary text-sm mb-3">
-                        {formatDate(update.date)}
-                      </p>
-                      <p className="text-text-secondary">
-                        {update.content}
-                      </p>
-                    </div>
-                  ))}
+                    ))
+                  ) : (
+                    <p className="text-text-secondary">No updates yet</p>
+                  )}
                 </div>
               )}
             </div>
@@ -270,10 +226,10 @@ Our mission is to make smart home technology accessible to everyone, not just te
                 />
                 <div className="mt-4">
                   <p className="text-text-primary font-bold text-2xl">
-                    {formatCurrency(campaign.currentAmount)}
+                    ₹{campaign.currentAmount.toLocaleString('en-IN')}
                   </p>
                   <p className="text-text-tertiary text-sm">
-                    of {formatCurrency(campaign.goalAmount)} goal
+                    of ₹{campaign.goalAmount.toLocaleString('en-IN')} goal
                   </p>
                 </div>
               </div>
@@ -285,7 +241,7 @@ Our mission is to make smart home technology accessible to everyone, not just te
                   <div>
                     <p className="text-text-secondary text-sm">Backers</p>
                     <p className="text-text-primary font-semibold">
-                      {formatNumber(campaign.donorCount)}
+                      {campaign.donorCount?.toLocaleString('en-IN') || '0'}
                     </p>
                   </div>
                 </div>
@@ -307,7 +263,7 @@ Our mission is to make smart home technology accessible to everyone, not just te
                     variant="primary" 
                     size="lg" 
                     className="w-full"
-                    onClick={() => setShowPaymentModal(true)}
+                    onClick={() => setShowDonationForm(!showDonationForm)}
                   >
                     Back This Project
                   </Button>
@@ -343,16 +299,24 @@ Our mission is to make smart home technology accessible to everyone, not just te
             </div>
           </div>
         </div>
-      </div>
 
-      {/* Payment Modal */}
-      {showPaymentModal && (
-        <PaymentModal
-          isOpen={showPaymentModal}
-          onClose={() => setShowPaymentModal(false)}
-          campaign={campaign}
-        />
-      )}
+        {/* Donation Form - Shows when "Back This Project" is clicked */}
+        {showDonationForm && user && (
+          <div className="mt-12 border-t border-dark-bg-tertiary pt-12">
+            <h2 className="text-3xl font-bold text-text-primary mb-8 text-center">
+              Make a Donation
+            </h2>
+            <div className="flex justify-center">
+              <DonationForm 
+                campaignId={campaign.id}
+                campaignTitle={campaign.title}
+                donorId={user.id}
+                donorEmail={user.email}
+              />
+            </div>
+          </div>
+        )}
+      </div>
     </div>
   );
 };

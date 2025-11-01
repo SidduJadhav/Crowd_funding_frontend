@@ -1,222 +1,254 @@
+import { loadStripe } from '@stripe/stripe-js';
 import apiClient from './api';
 
 /**
- * Payment Service - Indian Payment Integration
- * Supports: UPI, Net Banking, Debit/Credit Cards, Wallets
+ * Stripe Payment Service - Frontend Integration
+ * Using Checkout Session with server-side redirect
  */
 
-// ==================== PAYMENT INITIATION ====================
+let stripePromise = null;
 
-// Initialize payment for donation
-export const initiatePayment = async (paymentData) => {
-  const response = await apiClient.post('/payments/initiate', paymentData);
-  return response.data;
-};
-
-// ==================== UPI PAYMENT ====================
-
-// Generate UPI payment link
-export const generateUPILink = async (amount, campaignId, donorId) => {
-  const response = await apiClient.post('/payments/upi/generate', {
-    amount,
-    campaignId,
-    donorId,
-  });
-  return response.data;
-};
-
-// Generate UPI QR Code
-export const generateUPIQRCode = async (amount, campaignId, donorId) => {
-  const response = await apiClient.post('/payments/upi/qr-code', {
-    amount,
-    campaignId,
-    donorId,
-  });
-  return response.data; // Returns base64 QR code image
-};
-
-// Verify UPI payment
-export const verifyUPIPayment = async (transactionId) => {
-  const response = await apiClient.get(`/payments/upi/verify/${transactionId}`);
-  return response.data;
-};
-
-// ==================== CARD PAYMENT ====================
-
-// Process card payment
-export const processCardPayment = async (cardData) => {
-  const response = await apiClient.post('/payments/card/process', cardData);
-  return response.data;
-};
-
-// Validate card
-export const validateCard = async (cardNumber) => {
-  const response = await apiClient.post('/payments/card/validate', { cardNumber });
-  return response.data;
-};
-
-// ==================== NET BANKING ====================
-
-// Get list of supported banks
-export const getSupportedBanks = async () => {
-  const response = await apiClient.get('/payments/netbanking/banks');
-  return response.data;
-};
-
-// Initiate net banking payment
-export const initiateNetBanking = async (bankCode, amount, campaignId, donorId) => {
-  const response = await apiClient.post('/payments/netbanking/initiate', {
-    bankCode,
-    amount,
-    campaignId,
-    donorId,
-  });
-  return response.data;
-};
-
-// ==================== WALLET PAYMENT ====================
-
-// Get supported wallets (Paytm, PhonePe, Google Pay, etc.)
-export const getSupportedWallets = async () => {
-  const response = await apiClient.get('/payments/wallet/supported');
-  return response.data;
-};
-
-// Initiate wallet payment
-export const initiateWalletPayment = async (walletType, amount, campaignId, donorId) => {
-  const response = await apiClient.post('/payments/wallet/initiate', {
-    walletType,
-    amount,
-    campaignId,
-    donorId,
-  });
-  return response.data;
-};
-
-// ==================== PAYMENT VERIFICATION ====================
-
-// Verify payment status
-export const verifyPayment = async (paymentId) => {
-  const response = await apiClient.get(`/payments/verify/${paymentId}`);
-  return response.data;
-};
-
-// Get payment details
-export const getPaymentDetails = async (paymentId) => {
-  const response = await apiClient.get(`/payments/${paymentId}`);
-  return response.data;
-};
-
-// ==================== REFUND ====================
-
-// Request refund
-export const requestRefund = async (paymentId, reason) => {
-  const response = await apiClient.post(`/payments/${paymentId}/refund`, { reason });
-  return response.data;
-};
-
-// Get refund status
-export const getRefundStatus = async (refundId) => {
-  const response = await apiClient.get(`/payments/refund/${refundId}/status`);
-  return response.data;
-};
-
-// ==================== PAYMENT HISTORY ====================
-
-// Get user payment history
-export const getUserPaymentHistory = async (userId, params = {}) => {
-  const { page = 0, size = 20 } = params;
-  const queryParams = new URLSearchParams({ page, size });
-  const response = await apiClient.get(`/payments/user/${userId}/history?${queryParams}`);
-  return response.data;
-};
-
-// Get campaign payment history
-export const getCampaignPaymentHistory = async (campaignId, params = {}) => {
-  const { page = 0, size = 20 } = params;
-  const queryParams = new URLSearchParams({ page, size });
-  const response = await apiClient.get(`/payments/campaign/${campaignId}/history?${queryParams}`);
-  return response.data;
-};
-
-// ==================== HELPER FUNCTIONS ====================
-
-// Validate UPI ID
-export const validateUPIId = (upiId) => {
-  const upiRegex = /^[\w.-]+@[\w.-]+$/;
-  return upiRegex.test(upiId);
-};
-
-// Validate card number (Luhn algorithm)
-export const validateCardNumber = (cardNumber) => {
-  const cleaned = cardNumber.replace(/\s/g, '');
-  if (!/^\d{13,19}$/.test(cleaned)) return false;
-  
-  let sum = 0;
-  let isEven = false;
-  
-  for (let i = cleaned.length - 1; i >= 0; i--) {
-    let digit = parseInt(cleaned[i]);
-    
-    if (isEven) {
-      digit *= 2;
-      if (digit > 9) digit -= 9;
+/**
+ * Initialize Stripe
+ */
+const getStripe = () => {
+  if (!stripePromise) {
+    const publishableKey = import.meta.env.VITE_STRIPE_PUBLISHABLE_KEY;
+    if (!publishableKey) {
+      throw new Error(
+        'Stripe publishable key is not configured. ' +
+        'Please set VITE_STRIPE_PUBLISHABLE_KEY in your environment variables.'
+      );
     }
-    
-    sum += digit;
-    isEven = !isEven;
+    stripePromise = loadStripe(publishableKey);
   }
-  
-  return sum % 10 === 0;
+  return stripePromise;
 };
 
-// Get card type from number
-export const getCardType = (cardNumber) => {
-  const cleaned = cardNumber.replace(/\s/g, '');
-  
-  if (/^4/.test(cleaned)) return 'Visa';
-  if (/^5[1-5]/.test(cleaned)) return 'Mastercard';
-  if (/^3[47]/.test(cleaned)) return 'American Express';
-  if (/^6(?:011|5)/.test(cleaned)) return 'Discover';
-  if (/^35/.test(cleaned)) return 'JCB';
-  if (/^(?:2131|1800|30[0-5])/.test(cleaned)) return 'Diners Club';
-  if (/^(5018|5020|5038|6304|6759|6761|6763)/.test(cleaned)) return 'Maestro';
-  if (/^(6062|60[6-9][0-9]|65[0-9])/.test(cleaned)) return 'RuPay';
-  
-  return 'Unknown';
+/**
+ * Check if Stripe is properly configured
+ */
+export const isStripeConfigured = () => {
+  return !!import.meta.env.VITE_STRIPE_PUBLISHABLE_KEY;
 };
 
-// Format card number with spaces
-export const formatCardNumber = (cardNumber) => {
-  return cardNumber.replace(/\s/g, '').match(/.{1,4}/g)?.join(' ') || cardNumber;
+/**
+ * Initiate donation and get Checkout Session ID
+ * @param {Object} donationData - Donation details
+ * @returns {Promise<Object>} Contains sessionId, donationId, amount, currency, checkoutUrl
+ */
+export const initiateDonation = async (donationData) => {
+  try {
+    console.log('Initiating donation:', donationData);
+
+    const response = await apiClient.post('/donations/initiate', {
+      campaignId: donationData.campaignId,
+      donorId: donationData.donorId,
+      donorEmail: donationData.donorEmail,
+      amount: donationData.amount,
+      currency: donationData.currency || 'INR',
+      isAnonymous: donationData.isAnonymous || false,
+      message: donationData.message || '',
+      paymentMethod: 'STRIPE_CHECKOUT',
+    });
+
+    console.log('Donation initiated successfully:', response.data);
+    return response.data;
+
+  } catch (error) {
+    console.error('Error initiating donation:', error);
+    throw error;
+  }
 };
 
-// Mask card number
-export const maskCardNumber = (cardNumber) => {
-  const cleaned = cardNumber.replace(/\s/g, '');
-  return `**** **** **** ${cleaned.slice(-4)}`;
+/**
+ * Redirect to Stripe Checkout
+ * Method: Direct URL redirect (simplest approach)
+ * The backend returns the Checkout URL, we just redirect to it
+ * @param {string} checkoutUrl - Stripe Checkout URL from backend
+ * @returns {void}
+ */
+export const redirectToCheckout = (checkoutUrl) => {
+  try {
+    console.log('Redirecting to Stripe Checkout URL:', checkoutUrl);
+    
+    if (!checkoutUrl) {
+      throw new Error('Checkout URL not provided');
+    }
+
+    // Simple redirect to Stripe Checkout
+    window.location.href = checkoutUrl;
+
+  } catch (error) {
+    console.error('Error redirecting to checkout:', error);
+    throw error;
+  }
+};
+
+/**
+ * Complete donation flow - initiate and redirect
+ * @param {Object} donationData - Donation details
+ * @returns {Promise<void>}
+ */
+export const startDonationCheckout = async (donationData) => {
+  try {
+    // Step 1: Initiate donation and get checkout URL from backend
+    const { sessionId, checkoutUrl } = await initiateDonation(donationData);
+
+    if (!checkoutUrl) {
+      throw new Error('Backend did not return checkout URL');
+    }
+
+    // Step 2: Redirect to Stripe Checkout
+    redirectToCheckout(checkoutUrl);
+
+  } catch (error) {
+    console.error('Donation checkout failed:', error);
+    throw error;
+  }
+};
+
+/**
+ * Verify payment after returning from Stripe
+ * @param {string} sessionId - Stripe session ID from URL
+ * @param {string} donationId - Donation ID from URL
+ * @returns {Promise<Object>} Donation details
+ */
+export const verifyPayment = async (sessionId, donationId) => {
+  try {
+    console.log('Verifying payment:', { sessionId, donationId });
+
+    const response = await apiClient.get('/donations/verify', {
+      params: {
+        session_id: sessionId,
+        donation_id: donationId,
+      },
+    });
+
+    console.log('Payment verified successfully:', response.data);
+    return response.data;
+
+  } catch (error) {
+    console.error('Error verifying payment:', error);
+    throw error;
+  }
+};
+
+/**
+ * Get donation details
+ * @param {string} donationId - Donation ID
+ * @returns {Promise<Object>} Donation details
+ */
+export const getDonationDetails = async (donationId) => {
+  try {
+    const response = await apiClient.get(`/donations/${donationId}`);
+    return response.data;
+  } catch (error) {
+    console.error('Error fetching donation details:', error);
+    throw error;
+  }
+};
+
+/**
+ * Get campaign donations
+ * @param {string} campaignId - Campaign ID
+ * @param {Object} params - Pagination params
+ * @returns {Promise<Object>} Paginated donations
+ */
+export const getCampaignDonations = async (campaignId, params = {}) => {
+  try {
+    const { page = 0, size = 20 } = params;
+    const response = await apiClient.get(`/donations/campaign/${campaignId}`, {
+      params: { page, size },
+    });
+    return response.data;
+  } catch (error) {
+    console.error('Error fetching campaign donations:', error);
+    throw error;
+  }
+};
+
+/**
+ * Get user donations
+ * @param {Object} params - Pagination params
+ * @returns {Promise<Object>} Paginated donations
+ */
+export const getUserDonations = async (params = {}) => {
+  try {
+    const { page = 0, size = 20 } = params;
+    const response = await apiClient.get('/donations/user/me', {
+      params: { page, size },
+    });
+    return response.data;
+  } catch (error) {
+    console.error('Error fetching user donations:', error);
+    throw error;
+  }
+};
+
+/**
+ * Get total donations for campaign
+ * @param {string} campaignId - Campaign ID
+ * @returns {Promise<number>} Total amount
+ */
+export const getCampaignTotal = async (campaignId) => {
+  try {
+    const response = await apiClient.get(
+      `/donations/campaign/${campaignId}/total`
+    );
+    return response.data;
+  } catch (error) {
+    console.error('Error fetching campaign total:', error);
+    throw error;
+  }
+};
+
+/**
+ * Get unique donor count for campaign
+ * @param {string} campaignId - Campaign ID
+ * @returns {Promise<number>} Donor count
+ */
+export const getDonorCount = async (campaignId) => {
+  try {
+    const response = await apiClient.get(
+      `/donations/campaign/${campaignId}/donors/count`
+    );
+    return response.data;
+  } catch (error) {
+    console.error('Error fetching donor count:', error);
+    throw error;
+  }
+};
+
+/**
+ * Refund donation (admin only)
+ * @param {string} donationId - Donation ID
+ * @param {string} reason - Refund reason
+ * @returns {Promise<Object>} Refund details
+ */
+export const refundDonation = async (donationId, reason) => {
+  try {
+    const response = await apiClient.post(
+      `/donations/${donationId}/refund?reason=${encodeURIComponent(reason)}`
+    );
+    return response.data;
+  } catch (error) {
+    console.error('Error refunding donation:', error);
+    throw error;
+  }
 };
 
 export default {
-  initiatePayment,
-  generateUPILink,
-  generateUPIQRCode,
-  verifyUPIPayment,
-  processCardPayment,
-  validateCard,
-  getSupportedBanks,
-  initiateNetBanking,
-  getSupportedWallets,
-  initiateWalletPayment,
+  getStripe,
+  isStripeConfigured,
+  initiateDonation,
+  redirectToCheckout,
+  startDonationCheckout,
   verifyPayment,
-  getPaymentDetails,
-  requestRefund,
-  getRefundStatus,
-  getUserPaymentHistory,
-  getCampaignPaymentHistory,
-  validateUPIId,
-  validateCardNumber,
-  getCardType,
-  formatCardNumber,
-  maskCardNumber,
+  getDonationDetails,
+  getCampaignDonations,
+  getUserDonations,
+  getCampaignTotal,
+  getDonorCount,
+  refundDonation,
 };

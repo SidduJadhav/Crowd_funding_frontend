@@ -249,7 +249,7 @@ const CreatePost = () => {
             value={formData.location}
             onChange={handleChange}
             placeholder="Add a location"
-            icon={<MapPin size={18} />}
+            icon={MapPin}
           />
 
           <div className="flex items-center gap-3">

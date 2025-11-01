@@ -1,146 +1,160 @@
 import { useEffect, useState } from 'react';
-import { useNavigate, useSearchParams } from 'react-router-dom';
-import { CheckCircle, ArrowRight } from 'lucide-react';
-import Button from '../components/Common/Button';
-import LoadingSpinner from '../components/Common/LoadingSpinner';
-import { verifyPayment } from '../services/paymentService';
+import { CheckCircle, Loader, AlertCircle } from 'lucide-react';
+import { verifyPayment } from '../services/paymentService.js';
 
 const PaymentSuccess = () => {
-  const navigate = useNavigate();
-  const [searchParams] = useSearchParams();
-  const [loading, setLoading] = useState(true);
   const [paymentData, setPaymentData] = useState(null);
+  const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
   useEffect(() => {
-    const verifyPaymentStatus = async () => {
+    const verifyAndConfirmPayment = async () => {
       try {
-        const paymentId = searchParams.get('payment_id');
-        const sessionId = searchParams.get('session_id');
-        const campaignId = searchParams.get('campaign_id');
-        
-        if (paymentId) {
-          try {
-            const data = await verifyPayment(paymentId);
-            setPaymentData(data);
-          } catch (verifyError) {
-            console.warn('Payment verification failed, showing success anyway:', verifyError);
-            setPaymentData({ campaignId, paymentId });
-          }
-        } else if (sessionId) {
-          console.log('Stripe session detected, payment completed via Stripe');
-          setPaymentData({ campaignId, sessionId, stripePayment: true });
-        } else if (campaignId) {
-          setPaymentData({ campaignId });
-        } else {
-          setPaymentData({});
+        // Get URL parameters
+        const urlParams = new URLSearchParams(window.location.search);
+        const sessionId = urlParams.get('session_id');
+        const donationId = urlParams.get('donation_id');
+
+        console.log('PaymentSuccess - Params:', { sessionId, donationId });
+
+        if (!sessionId || !donationId) {
+          setError('Missing payment information in URL');
+          setLoading(false);
+          return;
         }
+
+        // Verify payment with backend
+        console.log('Verifying payment with backend...');
+        const data = await verifyPayment(sessionId, donationId);
+        
+        console.log('Payment verified successfully:', data);
+        setPaymentData(data);
+
+        // Auto-redirect after 3 seconds
+        setTimeout(() => {
+          window.location.href = `/campaign/${data.campaignId}`;
+        }, 3000);
+
       } catch (err) {
-        console.error('Error verifying payment:', err);
-        setError('Unable to verify payment details. Please check your donation history or contact support if amount was deducted.');
+        console.error('Payment verification error:', err);
+        setError(
+          err.response?.data?.message || 
+          'Payment verification failed. Please check your email or contact support.'
+        );
       } finally {
         setLoading(false);
       }
     };
 
-    verifyPaymentStatus();
-  }, [searchParams]);
+    verifyAndConfirmPayment();
+  }, []);
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-dark-bg flex items-center justify-center">
-        <LoadingSpinner size="large" />
+      <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 flex items-center justify-center p-4">
+        <div className="flex flex-col items-center gap-4">
+          <Loader size={40} className="animate-spin text-indigo-500" />
+          <p className="text-gray-300 text-lg">Verifying your payment...</p>
+        </div>
       </div>
     );
   }
 
   if (error) {
     return (
-      <div className="min-h-screen bg-dark-bg flex items-center justify-center p-4">
-        <div className="max-w-md w-full bg-dark-bg-secondary border border-dark-bg-tertiary rounded-lg p-8 text-center">
-          <div className="text-status-error text-6xl mb-4">⚠️</div>
-          <h2 className="text-2xl font-bold text-text-primary mb-4">Verification Error</h2>
-          <p className="text-text-secondary mb-6">{error}</p>
-          <Button onClick={() => navigate('/home')} variant="primary">
+      <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 flex items-center justify-center p-4">
+        <div className="max-w-md w-full bg-slate-800 border border-slate-700 rounded-lg p-8 text-center">
+          <AlertCircle size={60} className="text-yellow-500 mx-auto mb-4" />
+          <h2 className="text-2xl font-bold text-white mb-4">Verification Error</h2>
+          <p className="text-gray-300 mb-6">{error}</p>
+          <button
+            onClick={() => (window.location.href = '/home')}
+            className="w-full py-2 px-4 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg transition"
+          >
             Go to Home
-          </Button>
+          </button>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-dark-bg flex items-center justify-center p-4">
-      <div className="max-w-md w-full bg-dark-bg-secondary border border-dark-bg-tertiary rounded-lg p-8 text-center">
-        <div className="mb-6">
-          <CheckCircle className="text-status-success mx-auto" size={80} />
-        </div>
+    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 flex items-center justify-center p-4">
+      <div className="max-w-md w-full bg-slate-800 border border-slate-700 rounded-lg p-8 text-center">
         
-        <h1 className="text-3xl font-bold text-text-primary mb-4">
+        <div className="mb-6 flex justify-center">
+          <CheckCircle size={80} className="text-green-500 animate-bounce" />
+        </div>
+
+        <h1 className="text-3xl font-bold text-white mb-2">
           Payment Successful!
         </h1>
         
-        <p className="text-text-secondary mb-2">
-          Thank you for your generous donation.
-        </p>
-        
-        <p className="text-text-secondary mb-8">
-          Your contribution will make a real difference to this campaign.
+        <p className="text-gray-400 mb-6">
+          Thank you for your generous donation. Your contribution will make a real difference.
         </p>
 
         {paymentData && (
-          <div className="bg-dark-bg-tertiary rounded-lg p-4 mb-8 space-y-2">
-            {paymentData.amount && (
-              <div className="flex justify-between text-sm">
-                <span className="text-text-tertiary">Amount:</span>
-                <span className="text-text-primary font-semibold">
-                  ₹{parseFloat(paymentData.amount).toLocaleString('en-IN')}
+          <div className="bg-slate-700 rounded-lg p-4 mb-6 space-y-3 text-left">x
+            <div className="flex justify-between">
+              <span className="text-gray-400">Amount Donated:</span>
+              <span className="text-white font-semibold">
+                ₹{parseFloat(paymentData.amount).toLocaleString('en-IN')}
+              </span>
+            </div>
+            {paymentData.campaignTitle && (
+              <div className="flex justify-between">
+                <span className="text-gray-400">Campaign:</span>
+                <span className="text-white font-semibold truncate max-w-xs">
+                  {paymentData.campaignTitle}
                 </span>
               </div>
             )}
             {paymentData.transactionId && (
-              <div className="flex justify-between text-sm">
-                <span className="text-text-tertiary">Transaction ID:</span>
-                <span className="text-text-primary font-mono text-xs">
-                  {paymentData.transactionId}
+              <div className="flex justify-between">
+                <span className="text-gray-400">Transaction ID:</span>
+                <span className="text-gray-300 text-xs font-mono">
+                  {paymentData.transactionId.slice(0, 20)}...
                 </span>
               </div>
             )}
-            {paymentData.paymentMethod && (
-              <div className="flex justify-between text-sm">
-                <span className="text-text-tertiary">Payment Method:</span>
-                <span className="text-text-primary">
-                  {paymentData.paymentMethod}
+            {paymentData.createdAt && (
+              <div className="flex justify-between">
+                <span className="text-gray-400">Date:</span>
+                <span className="text-white">
+                  {new Date(paymentData.createdAt).toLocaleDateString('en-IN')}
                 </span>
               </div>
             )}
           </div>
         )}
 
-        <div className="space-y-3">
+        <div className="space-y-3 mb-6">
           {paymentData?.campaignId && (
-            <Button
-              onClick={() => navigate(`/campaign/${paymentData.campaignId}`)}
-              variant="primary"
-              className="w-full"
+            <button
+              onClick={() => (window.location.href = `/campaign/${paymentData.campaignId}`)}
+              className="w-full py-2 px-4 bg-gradient-to-r from-indigo-600 to-blue-600 hover:from-indigo-700 hover:to-blue-700 text-white rounded-lg transition font-semibold"
             >
               View Campaign
-              <ArrowRight size={18} className="ml-2" />
-            </Button>
+            </button>
           )}
-          
-          <Button
-            onClick={() => navigate('/home')}
-            variant="secondary"
-            className="w-full"
+
+          <button
+            onClick={() => (window.location.href = '/home')}
+            className="w-full py-2 px-4 bg-slate-700 hover:bg-slate-600 text-white rounded-lg transition"
           >
             Back to Home
-          </Button>
+          </button>
         </div>
 
-        <p className="text-text-tertiary text-sm mt-6">
-          A confirmation email has been sent to your registered email address.
-        </p>
+        <div className="pt-4 border-t border-slate-600">
+          <p className="text-xs text-gray-500">
+            Auto-redirecting in 3 seconds...
+          </p>
+          <p className="text-xs text-gray-500 mt-2">
+            A confirmation email has been sent to your registered email address.
+          </p>
+        </div>
       </div>
     </div>
   );

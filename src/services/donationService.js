@@ -47,9 +47,9 @@ export const getUniqueDonorCount = async (campaignId) => {
 };
 
 // Refund donation (admin only)
-export const refundDonation = async (donationId, adminId, reason) => {
+export const refundDonation = async (donationId, reason) => {
   const response = await apiClient.post(
-    `/donations/${donationId}/refund?adminId=${adminId}&reason=${encodeURIComponent(reason)}`
+    `/donations/${donationId}/refund?reason=${encodeURIComponent(reason)}`
   );
   return response.data;
 };
