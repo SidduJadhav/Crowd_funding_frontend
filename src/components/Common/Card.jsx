@@ -19,9 +19,12 @@ const Card = ({ campaign, onViewClick }) => {
   const daysLeft = getDaysLeft(endDate);
 
   return (
-    <div className="bg-dark-bg-secondary border border-dark-bg-tertiary rounded-lg overflow-hidden hover:border-accent-purple transition-all duration-200 group cursor-pointer">
+    <div
+      className="bg-light-bg-secondary border border-light-bg-tertiary rounded-lg overflow-hidden transition-all duration-300 group cursor-pointer hover:border-accent-green hover:shadow-xl hover:shadow-accent-green/20 transform hover:-translate-y-1" // UPDATED
+      onClick={onViewClick}
+    >
       {/* Image Container */}
-      <div className="relative overflow-hidden bg-dark-bg-tertiary h-48">
+      <div className="relative overflow-hidden bg-light-bg-tertiary h-48"> {/* UPDATED */}
         <img
           src={image || 'https://via.placeholder.com/400x300?text=Campaign'}
           alt={title}
@@ -29,18 +32,32 @@ const Card = ({ campaign, onViewClick }) => {
         />
         
         {/* Overlay with actions */}
-        <div className="absolute inset-0 bg-black opacity-0 group-hover:opacity-40 transition-opacity duration-200 flex items-center justify-center gap-4">
-          <button className="bg-accent-purple hover:bg-accent-purple-hover p-3 rounded-full text-white transition-colors">
+        <div className="absolute inset-0 bg-black opacity-0 group-hover:opacity-40 transition-opacity duration-300 flex items-center justify-center gap-4">
+          <button
+            onClick={(e) => {
+              e.stopPropagation();
+              alert('Like clicked!');
+            }}
+            className="bg-accent-green hover:bg-accent-green-hover p-3 rounded-full text-white transition-all transform scale-0 group-hover:scale-100" // UPDATED
+            style={{ transitionDelay: '100ms' }}
+          >
             <Heart size={20} />
           </button>
-          <button className="bg-accent-purple hover:bg-accent-purple-hover p-3 rounded-full text-white transition-colors">
+          <button
+            onClick={(e) => {
+              e.stopPropagation();
+              alert('Share clicked!');
+            }}
+            className="bg-accent-green hover:bg-accent-green-hover p-3 rounded-full text-white transition-all transform scale-0 group-hover:scale-100" // UPDATED
+            style={{ transitionDelay: '200ms' }}
+          >
             <Share2 size={20} />
           </button>
         </div>
 
         {/* Category Badge */}
         <div className="absolute top-3 left-3">
-          <span className="bg-accent-purple text-white text-xs font-semibold px-3 py-1 rounded-full">
+          <span className="bg-accent-green text-white text-xs font-semibold px-3 py-1 rounded-full"> {/* UPDATED */}
             {category}
           </span>
         </div>
@@ -58,45 +75,44 @@ const Card = ({ campaign, onViewClick }) => {
       {/* Content */}
       <div className="p-4">
         {/* Title */}
-        <h3 className="text-text-primary font-bold text-lg mb-1 line-clamp-2 hover:text-accent-purple transition-colors">
+        <h3 className="text-text-primary font-bold text-lg mb-1 line-clamp-2 group-hover:text-accent-green transition-colors"> {/* UPDATED */}
           {title}
         </h3>
 
         {/* Creator */}
-        <p className="text-text-secondary text-sm mb-3">{creatorName}</p>
+        <p className="text-text-secondary text-sm mb-3">{creatorName}</p> {/* UPDATED */}
 
         {/* Description */}
-        <p className="text-text-tertiary text-sm mb-4 line-clamp-2">
+        <p className="text-text-tertiary text-sm mb-4 line-clamp-2"> {/* UPDATED */}
           {truncateText(description, 80)}
         </p>
 
         {/* Funding Progress */}
         <div className="mb-4">
-          <div className="w-full bg-dark-bg-tertiary rounded-full h-2 overflow-hidden">
+          <div className="w-full bg-light-bg-tertiary rounded-full h-2 overflow-hidden"> {/* UPDATED */}
             <div
-              className="bg-gradient-to-r from-accent-purple to-purple-400 h-full rounded-full transition-all duration-300"
+              className="bg-gradient-to-r from-accent-green to-accent-light-green h-full rounded-full transition-all duration-300" // UPDATED
               style={{ width: `${fundingPercentage}%` }}
             />
           </div>
           <div className="flex justify-between items-center mt-2">
-            <span className="text-text-primary font-bold">
+            <span className="text-text-primary font-bold"> {/* UPDATED */}
               {formatCurrency(currentAmount)}
             </span>
-            <span className="text-text-tertiary text-sm">
+            <span className="text-text-tertiary text-sm"> {/* UPDATED */}
               {fundingPercentage.toFixed(0)}%
             </span>
           </div>
         </div>
 
         {/* Stats */}
-        <div className="flex justify-between text-text-secondary text-sm pt-3 border-t border-dark-bg-tertiary">
+        <div className="flex justify-between items-center text-text-secondary text-sm pt-3 border-t border-light-bg-tertiary"> {/* UPDATED */}
           <div>{formatNumber(donorCount)} backers</div>
-          <button
-            onClick={onViewClick}
-            className="text-accent-purple hover:text-accent-purple-hover font-medium transition-colors"
+          <div
+            className="text-accent-green group-hover:text-accent-green-hover font-medium transition-colors" // UPDATED
           >
             View →
-          </button>
+          </div>
         </div>
       </div>
     </div>

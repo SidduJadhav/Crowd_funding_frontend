@@ -3,12 +3,15 @@ import { useNavigate } from 'react-router-dom';
 import Card from '../Common/Card';
 import Button from '../Common/Button';
 import apiClient from '../../services/api';
+import { useIntersectionObserver } from '../../hooks/useIntersectionObserver'; // Import the hook
 
 const FeaturedCampaigns = () => {
   const [campaigns, setCampaigns] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const navigate = useNavigate();
+  const [headerRef, isHeaderVisible] = useIntersectionObserver();
+  const [gridRef, isGridVisible] = useIntersectionObserver({ threshold: 0.05 });
 
   useEffect(() => {
     fetchFeaturedCampaigns();
@@ -114,10 +117,13 @@ const FeaturedCampaigns = () => {
   }
 
   return (
-    <section className="py-20 bg-dark-bg">
+    <section className="py-20 bg-dark-bg overflow-hidden"> {/* Added overflow-hidden */}
       <div className="max-w-container mx-auto px-4">
         {/* Header */}
-        <div className="flex justify-between items-center mb-12">
+        <div
+          ref={headerRef}
+          className={`flex justify-between items-center mb-12 transition-all duration-700 ${isHeaderVisible ? 'animate-fadeInUp opacity-100' : 'opacity-0 translate-y-5'}`}
+        >
           <div>
             <h2 className="text-4xl md:text-5xl font-bold text-text-primary mb-2">
               Featured Projects
@@ -147,13 +153,21 @@ const FeaturedCampaigns = () => {
             ))}
           </div>
         ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {campaigns.map((campaign) => (
-              <Card
+          <div
+            ref={gridRef}
+            className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"
+          >
+            {campaigns.map((campaign, idx) => (
+              <div
                 key={campaign.id}
-                campaign={campaign}
-                onViewClick={() => navigate(`/campaign/${campaign.id}`)}
-              />
+                className={`transition-all duration-500 ${isGridVisible ? 'animate-fadeInUp' : 'opacity-0 translate-y-5'}`}
+                style={{ animationDelay: `${idx * 100}ms` }}
+              >
+                <Card
+                  campaign={campaign}
+                  onViewClick={() => navigate(`/campaign/${campaign.id}`)}
+                />
+              </div>
             ))}
           </div>
         )}

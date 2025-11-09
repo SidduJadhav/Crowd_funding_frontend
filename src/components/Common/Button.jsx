@@ -10,9 +10,10 @@ const Button = ({
   const baseStyles = 'font-medium rounded-md transition-all duration-200 inline-flex items-center justify-center gap-2';
 
   const variants = {
-    primary: 'bg-accent-purple hover:bg-accent-purple-hover text-white disabled:bg-text-tertiary',
-    secondary: 'bg-transparent border border-accent-purple text-accent-purple hover:bg-dark-bg-tertiary disabled:border-text-tertiary disabled:text-text-tertiary',
-    tertiary: 'bg-dark-bg-tertiary hover:bg-dark-bg-secondary text-text-primary disabled:bg-dark-bg-secondary disabled:text-text-tertiary',
+    // UPDATED
+    primary: 'bg-accent-green hover:bg-accent-green-hover text-white disabled:bg-text-tertiary',
+    secondary: 'bg-transparent border border-accent-green text-accent-green hover:bg-light-bg-tertiary disabled:border-text-tertiary disabled:text-text-tertiary',
+    tertiary: 'bg-light-bg-tertiary hover:bg-light-bg-secondary text-text-secondary disabled:bg-light-bg-secondary disabled:text-text-tertiary',
     danger: 'bg-status-error hover:bg-red-700 text-white disabled:bg-text-tertiary',
   };
 

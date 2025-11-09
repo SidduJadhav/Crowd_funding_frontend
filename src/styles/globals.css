@@ -13,28 +13,29 @@ html {
 }
 
 body {
-  background-color: #0d1117;
-  color: #e6edf3;
+  /* UPDATED: New light theme */
+  background-color: #FFFD8F; /* light-bg */
+  color: #4C763B; /* text-secondary */
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto,
     'Helvetica Neue', sans-serif;
 }
 
-/* Custom scrollbar */
+/* Custom scrollbar (NEW) */
 ::-webkit-scrollbar {
   width: 12px;
 }
 
 ::-webkit-scrollbar-track {
-  background: #0d1117;
+  background: #EFEFCF; /* light-bg-tertiary */
 }
 
 ::-webkit-scrollbar-thumb {
-  background: #a371f7;
+  background: #B0CE88; /* accent-light-green */
   border-radius: 6px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: #923cc5;
+  background: #4C763B; /* accent-green */
 }
 
 /* Utility classes */
@@ -46,7 +47,8 @@ body {
 }
 
 .prose {
-  color: #e6edf3;
+  /* UPDATED */
+  color: #4C763B;
 }
 
 .prose p {
@@ -70,17 +72,17 @@ body {
   animation: fadeIn 0.3s ease-out;
 }
 
-/* Glassmorphism effect */
+/* Glassmorphism effect (UPDATED for light theme) */
 .glass {
-  background: rgba(13, 17, 23, 0.7);
+  background: rgba(255, 255, 255, 0.7); /* Was dark */
   backdrop-filter: blur(10px);
-  border: 1px solid rgba(163, 113, 247, 0.1);
+  border: 1px solid rgba(76, 118, 59, 0.1); /* Was purple */
 }
 
-/* Focus ring */
+/* Focus ring (UPDATED) */
 .focus-ring {
   outline: none;
-  box-shadow: 0 0 0 3px rgba(163, 113, 247, 0.1);
+  box-shadow: 0 0 0 3px rgba(76, 118, 59, 0.1);
 }
 
 input:focus {
@@ -88,7 +90,7 @@ input:focus {
 }
 
 button:focus-visible {
-  outline: 2px solid #a371f7;
+  outline: 2px solid #4C763B; /* Was purple */
   outline-offset: 2px;
 }
 

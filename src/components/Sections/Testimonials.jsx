@@ -1,6 +1,10 @@
 import { Star } from 'lucide-react';
+import { useIntersectionObserver } from '../../hooks/useIntersectionObserver'; // Import the hook
 
 const Testimonials = () => {
+  const [headerRef, isHeaderVisible] = useIntersectionObserver();
+  const [gridRef, isGridVisible] = useIntersectionObserver({ threshold: 0.1 });
+
   const testimonials = [
     {
       name: 'Sarah Johnson',
@@ -29,9 +33,12 @@ const Testimonials = () => {
   ];
 
   return (
-    <section className="py-20 bg-dark-bg">
+    <section className="py-20 bg-dark-bg overflow-hidden"> {/* Added overflow-hidden */}
       <div className="max-w-container mx-auto px-4">
-        <div className="text-center mb-16">
+        <div
+          ref={headerRef}
+          className={`text-center mb-16 transition-all duration-700 ${isHeaderVisible ? 'animate-fadeInUp opacity-100' : 'opacity-0 translate-y-5'}`}
+        >
           <h2 className="text-4xl md:text-5xl font-bold text-text-primary mb-4">
             Loved by Creators & Supporters
           </h2>
@@ -40,11 +47,15 @@ const Testimonials = () => {
           </p>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+        <div
+          ref={gridRef}
+          className="grid grid-cols-1 md:grid-cols-3 gap-8"
+        >
           {testimonials.map((testimonial, idx) => (
             <div
               key={idx}
-              className="bg-dark-bg-secondary border border-dark-bg-tertiary rounded-xl p-8 hover:border-accent-purple transition-colors"
+              className={`bg-dark-bg-secondary border border-dark-bg-tertiary rounded-xl p-8 hover:border-accent-purple transition-all duration-300 transform hover:-translate-y-1 ${isGridVisible ? 'animate-fadeInUp' : 'opacity-0 translate-y-5'}`}
+              style={{ animationDelay: `${idx * 150}ms` }}
             >
               <div className="flex gap-1 mb-4">
                 {[...Array(testimonial.rating)].map((_, i) => (

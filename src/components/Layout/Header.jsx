@@ -52,14 +52,14 @@ const Header = () => {
   };
 
   return (
-    <header className="sticky top-0 z-50 bg-dark-bg border-b border-dark-bg-tertiary">
+    <header className="sticky top-0 z-50 bg-light-bg-secondary border-b border-light-bg-tertiary"> {/* UPDATED */}
       <div className="max-w-container mx-auto px-4 py-4 flex items-center justify-between">
         {/* Logo */}
         <button 
           onClick={handleLogoClick}
-          className="text-2xl font-bold text-accent-purple hover:text-accent-purple-hover transition-colors"
+          className="text-2xl font-bold text-accent-green hover:text-accent-green-hover transition-colors" // UPDATED
         >
-          Crowdfund
+          Catalyster
         </button>
 
         {/* Desktop Navigation */}
@@ -72,8 +72,8 @@ const Header = () => {
                 to={link.href}
                 className={`flex items-center gap-2 transition-colors ${
                   isActive(link.href)
-                    ? 'text-accent-purple'
-                    : 'text-text-primary hover:text-accent-purple'
+                    ? 'text-accent-green' // UPDATED
+                    : 'text-text-primary hover:text-accent-green' // UPDATED
                 }`}
               >
                 {Icon && <Icon size={20} />}
@@ -91,18 +91,18 @@ const Header = () => {
               <div className="relative">
                 <button
                   onClick={() => setShowCreateMenu(!showCreateMenu)}
-                  className="p-2 hover:bg-dark-bg-tertiary rounded-full transition-colors"
+                  className="p-2 hover:bg-light-bg-tertiary rounded-full transition-colors" // UPDATED
                 >
                   <PlusCircle size={22} className="text-text-primary" />
                 </button>
                 {showCreateMenu && (
-                  <div className="absolute right-0 mt-2 w-48 bg-dark-bg-secondary border border-dark-bg-tertiary rounded-lg shadow-lg py-2 z-50">
+                  <div className="absolute right-0 mt-2 w-48 bg-light-bg-secondary border border-light-bg-tertiary rounded-lg shadow-lg py-2 z-50"> {/* UPDATED */}
                     <button
                       onClick={() => {
                         navigate('/create-campaign');
                         setShowCreateMenu(false);
                       }}
-                      className="w-full text-left px-4 py-2 text-text-primary hover:bg-dark-bg-tertiary transition-colors"
+                      className="w-full text-left px-4 py-2 text-text-primary hover:bg-light-bg-tertiary transition-colors" // UPDATED
                     >
                       Create Campaign
                     </button>
@@ -111,7 +111,7 @@ const Header = () => {
                         navigate('/create-post');
                         setShowCreateMenu(false);
                       }}
-                      className="w-full text-left px-4 py-2 text-text-primary hover:bg-dark-bg-tertiary transition-colors"
+                      className="w-full text-left px-4 py-2 text-text-primary hover:bg-light-bg-tertiary transition-colors" // UPDATED
                     >
                       Create Post
                     </button>
@@ -120,7 +120,7 @@ const Header = () => {
                         navigate('/create-reel');
                         setShowCreateMenu(false);
                       }}
-                      className="w-full text-left px-4 py-2 text-text-primary hover:bg-dark-bg-tertiary transition-colors"
+                      className="w-full text-left px-4 py-2 text-text-primary hover:bg-light-bg-tertiary transition-colors" // UPDATED
                     >
                       Create Reel
                     </button>
@@ -131,7 +131,7 @@ const Header = () => {
               {/* Notifications */}
               <button
                 onClick={() => navigate('/notifications')}
-                className="relative p-2 hover:bg-dark-bg-tertiary rounded-full transition-colors"
+                className="relative p-2 hover:bg-light-bg-tertiary rounded-full transition-colors" // UPDATED
               >
                 <Bell size={22} className="text-text-primary" />
                 {unreadCount > 0 && (
@@ -144,7 +144,7 @@ const Header = () => {
               {/* Profile */}
               <button
                 onClick={() => navigate('/profile')}
-                className="flex items-center gap-2 hover:bg-dark-bg-tertiary px-3 py-2 rounded-lg transition-colors"
+                className="flex items-center gap-2 hover:bg-light-bg-tertiary px-3 py-2 rounded-lg transition-colors" // UPDATED
               >
                 <User size={20} className="text-text-primary" />
                 <span className="text-text-primary">{user.username}</span>
@@ -180,7 +180,7 @@ const Header = () => {
 
         {/* Mobile Menu Toggle */}
         <button
-          className="md:hidden text-text-primary hover:text-accent-purple transition-colors"
+          className="md:hidden text-text-primary hover:text-accent-green transition-colors" // UPDATED
           onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
         >
           {mobileMenuOpen ? <X size={24} /> : <Menu size={24} />}
@@ -189,7 +189,7 @@ const Header = () => {
 
       {/* Mobile Menu */}
       {mobileMenuOpen && (
-        <div className="md:hidden bg-dark-bg-secondary border-t border-dark-bg-tertiary p-4">
+        <div className="md:hidden bg-light-bg-secondary border-t border-light-bg-tertiary p-4"> {/* UPDATED */}
           <nav className="flex flex-col gap-4">
             {navLinks.map((link) => {
               const Icon = link.icon;
@@ -199,8 +199,8 @@ const Header = () => {
                   to={link.href}
                   className={`flex items-center gap-3 transition-colors ${
                     isActive(link.href)
-                      ? 'text-accent-purple'
-                      : 'text-text-primary hover:text-accent-purple'
+                      ? 'text-accent-green' // UPDATED
+                      : 'text-text-primary hover:text-accent-green' // UPDATED
                   }`}
                   onClick={() => setMobileMenuOpen(false)}
                 >
@@ -212,11 +212,11 @@ const Header = () => {
 
             {user && (
               <>
-                <div className="border-t border-dark-bg-tertiary pt-4 mt-4">
+                <div className="border-t border-light-bg-tertiary pt-4 mt-4"> {/* UPDATED */}
                   <p className="text-text-secondary text-sm mb-2 px-2">Create</p>
                   <Link
                     to="/create-campaign"
-                    className="flex items-center gap-3 text-text-primary hover:text-accent-purple transition-colors mb-2"
+                    className="flex items-center gap-3 text-text-primary hover:text-accent-green transition-colors mb-2" // UPDATED
                     onClick={() => setMobileMenuOpen(false)}
                   >
                     <PlusCircle size={20} />
@@ -224,7 +224,7 @@ const Header = () => {
                   </Link>
                   <Link
                     to="/create-post"
-                    className="flex items-center gap-3 text-text-primary hover:text-accent-purple transition-colors mb-2"
+                    className="flex items-center gap-3 text-text-primary hover:text-accent-green transition-colors mb-2" // UPDATED
                     onClick={() => setMobileMenuOpen(false)}
                   >
                     <Image size={20} />
@@ -232,7 +232,7 @@ const Header = () => {
                   </Link>
                   <Link
                     to="/create-reel"
-                    className="flex items-center gap-3 text-text-primary hover:text-accent-purple transition-colors"
+                    className="flex items-center gap-3 text-text-primary hover:text-accent-green transition-colors" // UPDATED
                     onClick={() => setMobileMenuOpen(false)}
                   >
                     <Video size={20} />
@@ -240,10 +240,10 @@ const Header = () => {
                   </Link>
                 </div>
 
-                <div className="border-t border-dark-bg-tertiary pt-4 mt-4">
+                <div className="border-t border-light-bg-tertiary pt-4 mt-4"> {/* UPDATED */}
                   <Link
                     to="/notifications"
-                    className="flex items-center gap-3 text-text-primary hover:text-accent-purple transition-colors"
+                    className="flex items-center gap-3 text-text-primary hover:text-accent-green transition-colors" // UPDATED
                     onClick={() => setMobileMenuOpen(false)}
                   >
                     <Bell size={20} />
@@ -257,7 +257,7 @@ const Header = () => {
 
                   <Link
                     to="/profile"
-                    className="flex items-center gap-3 text-text-primary hover:text-accent-purple transition-colors mt-2"
+                    className="flex items-center gap-3 text-text-primary hover:text-accent-green transition-colors mt-2" // UPDATED
                     onClick={() => setMobileMenuOpen(false)}
                   >
                     <User size={20} />
@@ -267,7 +267,7 @@ const Header = () => {
               </>
             )}
 
-            <div className="flex flex-col gap-2 mt-4 pt-4 border-t border-dark-bg-tertiary">
+            <div className="flex flex-col gap-2 mt-4 pt-4 border-t border-light-bg-tertiary"> {/* UPDATED */}
               {user ? (
                 <Button
                   variant="tertiary"

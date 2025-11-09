@@ -10,9 +10,9 @@ const ProgressBar = ({ current, goal, percentage, animated = true, size = 'md' }
   };
 
   return (
-    <div className={`w-full bg-dark-bg-tertiary rounded-full overflow-hidden ${sizes[size]}`}>
+    <div className={`w-full bg-light-bg-tertiary rounded-full overflow-hidden ${sizes[size]}`}> {/* UPDATED */}
       <div
-        className={`bg-gradient-to-r from-accent-purple to-purple-400 ${sizes[size]} ${
+        className={`bg-gradient-to-r from-accent-green to-accent-light-green ${sizes[size]} ${ // UPDATED
           animated ? 'transition-all duration-500' : ''
         }`}
         style={{ width: `${normalizedPercentage}%` }}
